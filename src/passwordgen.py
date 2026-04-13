@@ -1,22 +1,21 @@
-# huvudfil för lösenordsgeneratorn
-
-def show_menu():
-    print("\n=== Lösenordsgenerator ===")
-    print("1. Generera lösenord")
-    print("2. Avsluta")
+# main.py
+import tkinter as tk
 
 def main():
-    while True:
-        show_menu()
-        choice = input("Välj en alternativ: ")
+    window = tk.Tk()
+    window.title("Password Generator")
+    window.geometry("400x200")
 
-        if choice == "1":
-            print("Lösenord genererator är inte klart ännu.")
-        elif choice == "2":
-            print("Hej då!")
-            break
-        else:
-            print("Felaktigt alternativ.")
+    label = tk.Label(window, text="Password Generator", font=("Arial", 16))
+    label.pack(pady=20)
+
+    btn_generate = tk.Button(window, text="Generate Password")
+    btn_generate.pack(pady=5)
+
+    btn_exit = tk.Button(window, text="Exit", command=window.destroy)
+    btn_exit.pack(pady=5)
+
+    window.mainloop()
 
 if __name__ == "__main__":
     main()
