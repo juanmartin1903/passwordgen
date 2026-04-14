@@ -7,9 +7,29 @@ import string # Bibliotek som innehåller olika strängkonstanter, används här
 # Funktion för att generera ett enkelt lösenord baserat på den valda längden från skalan
 
 def generate_simple_password():
-    characters = string.ascii_letters + string.digits # Skapar en sträng som innehåller både bokstäver (stora och små) och siffror
-    length = scale_1.get() # Hämtar den valda längden från skalan (scale_1) som användaren har justerat
-    return ''.join(secrets.choice(characters) for _ in range(length)) # Genererar ett lösenord genom att slumpmässigt välja tecken från 'characters' strängen, upprepat 'length' gånger, och sammanfogar dem till en enda sträng
+    characters = ""
+
+    # Konsonanter (alla bokstäver utom vokaler)
+    
+    consonants = ''.join([c for c in string.ascii_letters if c.lower() not in "aeiouåäö"])
+    vowels = "aeiouåäöAEIOUÅÄÖ"
+    digits = string.digits
+    symbols = string.punctuation
+
+    if checkbutton_var.get() == 1:      # Inkludera konsonanter
+        characters += consonants
+    if checkbutton_var2.get() == 1:     # Inkludera vokaler
+        characters += vowels
+    if checkbutton_var3.get() == 1:     # Inkludera siffror
+        characters += digits
+    if checkbutton_var4.get() == 1:     # Inkludera specialtecken
+        characters += symbols
+
+    if characters == "":
+        return "Välj minst ett alternativ"
+
+    length = scale_1.get()
+    return ''.join(secrets.choice(characters) for _ in range(length))
 
 # Funktion för att generera och visa det genererade lösenordet i output_box
 
@@ -21,8 +41,9 @@ def generate_and_display():
 # Huvudfunktionen som skapar det grafiska gränssnittet och hanterar användarinteraktionen
 
 def main():
-    global output_box, scale_1 # Deklarerar output_box och scale_1 som globala variabler så att de kan användas i andra funktioner
-    
+    global output_box, scale_1
+    global checkbutton_var, checkbutton_var2, checkbutton_var3, checkbutton_var4    
+
 # Skapar huvudfönstret för applikationen, sätter titel och storlek, och lägger till olika widgets (etiketter, skala, knappar och inmatningsfält) för att skapa användargränssnittet
 
     window = tk.Tk()
