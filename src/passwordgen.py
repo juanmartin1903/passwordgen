@@ -1,47 +1,55 @@
-# Importerar nödvändiga bibliotek
+# Bibliotek som används för att skapa det grafiska gränssnittet, generera säkra lösenord och hantera strängar
 
-import tkinter as tk # Importerar tkinter för att skapa GUI:t
-import secrets # Importerar secrets för att generera säkra lösenord
-import string # Importerar string för att få tillgång till bokstäver och siffror som kan användas i lösenordet
+import tkinter as tk # Bibliotek för att skapa grafiska användargränssnitt
+import secrets # Bibliotek för att generera säkra slumpmässiga tal, används här för att skapa lösenord
+import string # Bibliotek som innehåller olika strängkonstanter, används här för att få tillgång till bokstäver och siffror
 
-# Funktion för att generera ett enkelt lösenord
+# Funktion för att generera ett enkelt lösenord baserat på den valda längden från skalan
 
 def generate_simple_password():
-    characters = string.ascii_letters + string.digits # Inkluderar både stora och små bokstäver samt siffror   
-    size = 12
-    return ''.join(secrets.choice(characters) for _ in range(size)) # Genererar ett lösenord med 12 tecken bestående av bokstäver och siffror
+    characters = string.ascii_letters + string.digits # Skapar en sträng som innehåller både bokstäver (stora och små) och siffror
+    length = scale_1.get() # Hämtar den valda längden från skalan (scale_1) som användaren har justerat
+    return ''.join(secrets.choice(characters) for _ in range(length)) # Genererar ett lösenord genom att slumpmässigt välja tecken från 'characters' strängen, upprepat 'length' gånger, och sammanfogar dem till en enda sträng
 
-# Funktion för att generera lösenord och visa det i output-boxen
+# Funktion för att generera och visa det genererade lösenordet i output_box
 
 def generate_and_display():
-    password = generate_simple_password() # Anropar funktionen för att generera ett lösenord
-    output_box.delete(0, tk.END) # Tar bort eventuellt innehåll i output-boxen
-    output_box.insert(0, password) # Visar det genererade lösenordet i output-boxen
+    password = generate_simple_password() # Anropar funktionen generate_simple_password för att skapa ett nytt lösenord
+    output_box.delete(0, tk.END)
+    output_box.insert(0, password)
 
-# Huvudfunktionen som skapar GUI:t
+# Huvudfunktionen som skapar det grafiska gränssnittet och hanterar användarinteraktionen
 
 def main():
-    global output_box # Deklarerar output_box som global så att den kan användas i generate_and_display-funktionen
+    global output_box, scale_1 # Deklarerar output_box och scale_1 som globala variabler så att de kan användas i andra funktioner
+    
+# Skapar huvudfönstret för applikationen, sätter titel och storlek, och lägger till olika widgets (etiketter, skala, knappar och inmatningsfält) för att skapa användargränssnittet
 
-    window = tk.Tk() # Skapar huvudfönstret för GUI:t
+    window = tk.Tk()
     window.title("Lösenord Generator")
-    window.geometry("400x200")
+    window.geometry("400x300")
 
-    title = tk.Label(window, text="Lösenord Generator", font=("Arial", 16)) # Skapar en label-widget som fungerar som titel för fönstret
-    title.pack(pady=10) # Packar titel-labelen i fönstret med vertikal padding
+    title = tk.Label(window, text="Lösenord Generator", font=("Arial", 16))
+    title.pack(pady=10)
 
-    btn_generate = tk.Button(window, text="Generera Lösenord", command=generate_and_display) # Skapar en knapp som när den klickas på, anropar funktionen generate_and_display för att generera och visa lösenordet
-    btn_generate.pack(pady=5) # Packar knappen i fönstret med lite vertikal padding
+    scale_label = tk.Label(window, text="Välj Lösenordslängd:", font=("Arial", 12))
+    scale_label.pack(pady=5)
 
-    output_box = tk.Entry(window, font=("Arial", 14), justify="center") # Skapar en entry-widget för att visa det genererade lösenordet
-    output_box.pack(pady=10, fill="x", padx=20) # Packar entry-widgeten i fönstret med vertikal padding, horisontell fyllning och horisontell padding
+    scale_1 = tk.Scale(window, from_=8, to=20, orient=tk.HORIZONTAL)
+    scale_1.pack(pady=5)
 
-    btn_exit = tk.Button(window, text="Avsluta", command=window.destroy) # Skapar en knapp som när den klickas på, stänger fönstret
-    btn_exit.pack(pady=5)  # Packar avsluta-knappen i fönstret med lite vertikal padding
+    btn_generate = tk.Button(window, text="Generera Lösenord", command=generate_and_display)
+    btn_generate.pack(pady=5)
+
+    output_box = tk.Entry(window, font=("Arial", 14), justify="center")
+    output_box.pack(pady=10, fill="x", padx=20)
+
+    btn_exit = tk.Button(window, text="Avsluta", command=window.destroy)
+    btn_exit.pack(pady=5)
 
     window.mainloop()
 
-# Kör huvudfunktionen när skriptet körs
+# Startar programmet genom att anropa main-funktionen när skriptet körs direkt
 
 if __name__ == "__main__":
     main()
