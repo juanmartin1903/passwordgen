@@ -10,7 +10,7 @@ def generate_simple_password():
     characters = ""
 
     # Konsonanter (alla bokstäver utom vokaler)
-    
+
     consonants = ''.join([c for c in string.ascii_letters if c.lower() not in "aeiouåäö"])
     vowels = "aeiouåäöAEIOUÅÄÖ"
     digits = string.digits
@@ -38,10 +38,16 @@ def generate_and_display():
     output_box.delete(0, tk.END)
     output_box.insert(0, password)
 
+def copy_to_clipboard():
+    password = output_box.get()
+    if password.strip() != "":
+        window.clipboard_clear()
+        window.clipboard_append(password)
+
 # Huvudfunktionen som skapar det grafiska gränssnittet och hanterar användarinteraktionen
 
 def main():
-    global output_box, scale_1
+    global output_box, scale_1, window
     global checkbutton_var, checkbutton_var2, checkbutton_var3, checkbutton_var4    
 
 # Skapar huvudfönstret för applikationen, sätter titel och storlek, och lägger till olika widgets (etiketter, skala, knappar och inmatningsfält) för att skapa användargränssnittet
@@ -76,13 +82,18 @@ def main():
     scale_1 = tk.Scale(window, from_=8, to=20, orient=tk.HORIZONTAL)
     scale_1.pack(pady=5)
 
-
-
     btn_generate = tk.Button(window, text="Generera Lösenord", command=generate_and_display)
     btn_generate.pack(pady=5)
 
-    output_box = tk.Entry(window, font=("Arial", 14), justify="center")
-    output_box.pack(pady=10, fill="x", padx=20)
+    # Frame para colocar entry + botón en la misma fila
+    output_frame = tk.Frame(window)
+    output_frame.pack(pady=10, padx=20, fill="x")   
+
+    output_box = tk.Entry(output_frame, font=("Arial", 14), justify="center")
+    output_box.pack(side="left", fill="x", expand=True)
+
+    btn_copy = tk.Button(output_frame, text="Kopiera", command=copy_to_clipboard)
+    btn_copy.pack(side="left", padx=5)
 
     btn_exit = tk.Button(window, text="Avsluta", command=window.destroy)
     btn_exit.pack(pady=5)
