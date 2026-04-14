@@ -27,16 +27,35 @@ def main():
 
     window = tk.Tk()
     window.title("Lösenord Generator")
-    window.geometry("400x300")
+    window.geometry("400x400")
 
     title = tk.Label(window, text="Lösenord Generator", font=("Arial", 16))
     title.pack(pady=10)
+
+    checkbutton_var = tk.IntVar() 
+    chk1 = tk.Checkbutton(window, text="Inkludera Konsonanter", variable=checkbutton_var)
+    checkbutton_var.set(1)
+    chk1.pack(pady=5)
+    checkbutton_var2 = tk.IntVar() 
+    chk2 = tk.Checkbutton(window, text="Inkludera Vokaler", variable=checkbutton_var2)
+    checkbutton_var2.set(1)
+    chk2.pack(pady=5)
+    checkbutton_var3 = tk.IntVar()
+    chk3 = tk.Checkbutton(window, text="Inkludera Siffror", variable=checkbutton_var3)
+    checkbutton_var3.set(1)
+    chk3.pack(pady=5)
+    checkbutton_var4 = tk.IntVar()
+    chk4 = tk.Checkbutton(window, text="Inkludera specialtecken", variable=checkbutton_var4)
+    checkbutton_var4.set(0)
+    chk4.pack(pady=5)
 
     scale_label = tk.Label(window, text="Välj Lösenordslängd:", font=("Arial", 12))
     scale_label.pack(pady=5)
 
     scale_1 = tk.Scale(window, from_=8, to=20, orient=tk.HORIZONTAL)
     scale_1.pack(pady=5)
+
+
 
     btn_generate = tk.Button(window, text="Generera Lösenord", command=generate_and_display)
     btn_generate.pack(pady=5)
