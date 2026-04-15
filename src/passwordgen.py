@@ -34,9 +34,12 @@ def generate_simple_password():
 # Funktion för att generera och visa det genererade lösenordet i output_box
 
 def generate_and_display():
-    password = generate_simple_password() # Anropar funktionen generate_simple_password för att skapa ett nytt lösenord
+    password = generate_simple_password()
     output_box.delete(0, tk.END)
     output_box.insert(0, password)
+
+    strength, color = evaluate_strength(password)
+    strength_label.config(text=f"Styrka: {strength}", fg=color)
 
 def copy_to_clipboard():
     password = output_box.get()
@@ -78,6 +81,28 @@ class Tooltip:
         if self.tip_window:
             self.tip_window.destroy()
             self.tip_window = None
+
+def evaluate_strength(password):
+    length_score = len(password)
+    variety_score = 0
+
+    if any(c.islower() for c in password):
+        variety_score += 1
+    if any(c.isupper() for c in password):
+        variety_score += 1
+    if any(c.isdigit() for c in password):
+        variety_score += 1
+    if any(c in string.punctuation for c in password):
+        variety_score += 1
+
+    total = length_score + (variety_score * 2)
+
+    if total < 12:
+        return "Svagt", "red"
+    elif total < 20:
+        return "Medel", "orange"
+    else:
+        return "Starkt", "green"
 
 # Huvudfunktionen som skapar det grafiska gränssnittet och hanterar användarinteraktionen
 
@@ -130,6 +155,10 @@ def main():
     # Frame para colocar entry + botón en la misma fila
     output_frame = tk.Frame(window)
     output_frame.pack(pady=10, padx=20, fill="x")   
+
+    global strength_label
+    strength_label = tk.Label(window, text="Styrka: -", font=("Arial", 12))
+    strength_label.pack(pady=5)
 
     copy_icon = tk.PhotoImage(file="copy.png")
 
