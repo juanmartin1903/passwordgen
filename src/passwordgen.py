@@ -44,6 +44,41 @@ def copy_to_clipboard():
         window.clipboard_clear()
         window.clipboard_append(password)
 
+# Klass för att skapa verktygstips (tooltips) som visas när användaren hovrar över en widget, i det här fallet används den för att visa en tooltip
+
+class Tooltip:
+    def __init__(self, widget, text):
+        self.widget = widget
+        self.text = text
+        self.tip_window = None
+        widget.bind("<Enter>", self.show_tooltip)
+        widget.bind("<Leave>", self.hide_tooltip)
+
+    def show_tooltip(self, event=None):
+        if self.tip_window is not None:
+            return
+        x = self.widget.winfo_rootx() + 20
+        y = self.widget.winfo_rooty() + 20
+
+        self.tip_window = tw = tk.Toplevel(self.widget)
+        tw.wm_overrideredirect(True)
+        tw.wm_geometry(f"+{x}+{y}")
+
+        label = tk.Label(
+            tw,
+            text=self.text,
+            background="#ffffe0",
+            relief="solid",
+            borderwidth=1,
+            font=("Arial", 10)
+        )
+        label.pack(ipadx=5, ipady=3)
+
+    def hide_tooltip(self, event=None):
+        if self.tip_window:
+            self.tip_window.destroy()
+            self.tip_window = None
+
 # Huvudfunktionen som skapar det grafiska gränssnittet och hanterar användarinteraktionen
 
 def main():
@@ -76,6 +111,13 @@ def main():
     checkbutton_var4.set(0)
     chk4.pack(pady=5)
 
+    # Skapar tooltips för varje checkbox för att ge användaren mer information om vad varje alternativ innebär
+    
+    Tooltip(chk1, "Inkluderar konsonanter (b, c, d, f...)")
+    Tooltip(chk2, "Inkluderar vokaler (a, e, i, o, u, å, ä, ö)")
+    Tooltip(chk3, "Inkluderar siffror (0–9)")
+    Tooltip(chk4, "Inkluderar specialtecken (!@#$% osv.)")
+    
     scale_label = tk.Label(window, text="Välj Lösenordslängd:", font=("Arial", 12))
     scale_label.pack(pady=5)
 
