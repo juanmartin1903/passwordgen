@@ -142,6 +142,9 @@ def main():
     window = tk.Tk()
     window.title("Lösenord Generator")
     window.geometry("400x500")
+    window.resizable(False, False)
+    window.attributes("-toolwindow", True)
+    window.configure(highlightthickness=2, highlightbackground="#555")
 
     title = tk.Label(window, text="Lösenord Generator", font=("Arial", 16))
     title.pack(pady=10)
