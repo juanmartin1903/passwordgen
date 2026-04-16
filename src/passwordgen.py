@@ -4,6 +4,8 @@ import tkinter as tk # Bibliotek för att skapa grafiska användargränssnitt
 import secrets # Bibliotek för att generera säkra slumpmässiga tal, används här för att skapa lösenord
 import string # Bibliotek som innehåller olika strängkonstanter, används här för att få tillgång till bokstäver och siffror
 
+from tkinter import ttk # Importerar ttk-modulen från tkinter för att använda mer avancerade widgets, även om den inte används i det här skriptet
+
 # Funktion för att generera ett enkelt lösenord baserat på den valda längden från skalan
 
 def generate_simple_password():
@@ -38,8 +40,30 @@ def generate_and_display():
     output_box.delete(0, tk.END)
     output_box.insert(0, password)
 
-    strength, color = evaluate_strength(password)
+    strength, color, score = evaluate_strength(password)
+
+    # Actualizar texto
     strength_label.config(text=f"Styrka: {strength}", fg=color)
+
+    # Actualizar barra (máximo 40)
+    strength_bar["value"] = score
+    strength_bar["maximum"] = 40
+
+    # Cambiar color de la barra
+    style = ttk.Style()
+    style.theme_use("default")
+
+    if strength == "Svagt":
+        style.configure("red.Horizontal.TProgressbar", troughcolor="#ddd", background="red")
+        strength_bar.config(style="red.Horizontal.TProgressbar")
+
+    elif strength == "Medel":
+        style.configure("orange.Horizontal.TProgressbar", troughcolor="#ddd", background="orange")
+        strength_bar.config(style="orange.Horizontal.TProgressbar")
+
+    else:
+        style.configure("green.Horizontal.TProgressbar", troughcolor="#ddd", background="green")
+        strength_bar.config(style="green.Horizontal.TProgressbar")
 
 def copy_to_clipboard():
     password = output_box.get()
@@ -82,27 +106,30 @@ class Tooltip:
             self.tip_window.destroy()
             self.tip_window = None
 
+
 def evaluate_strength(password):
-    length_score = len(password)
-    variety_score = 0
+    score = 0
 
+    # Longitud
+    score += min(len(password), 20)
+
+    # Variedad de caracteres
     if any(c.islower() for c in password):
-        variety_score += 1
+        score += 5
     if any(c.isupper() for c in password):
-        variety_score += 1
+        score += 5
     if any(c.isdigit() for c in password):
-        variety_score += 1
+        score += 5
     if any(c in string.punctuation for c in password):
-        variety_score += 1
+        score += 5
 
-    total = length_score + (variety_score * 2)
-
-    if total < 12:
-        return "Svagt", "red"
-    elif total < 20:
-        return "Medel", "orange"
+    # Determinar nivel
+    if score < 15:
+        return "Svagt", "red", score
+    elif score < 30:
+        return "Medel", "orange", score
     else:
-        return "Starkt", "green"
+        return "Starkt", "green", score
 
 # Huvudfunktionen som skapar det grafiska gränssnittet och hanterar användarinteraktionen
 
@@ -114,7 +141,7 @@ def main():
 
     window = tk.Tk()
     window.title("Lösenord Generator")
-    window.geometry("400x400")
+    window.geometry("400x500")
 
     title = tk.Label(window, text="Lösenord Generator", font=("Arial", 16))
     title.pack(pady=10)
@@ -156,9 +183,13 @@ def main():
     output_frame = tk.Frame(window)
     output_frame.pack(pady=10, padx=20, fill="x")   
 
-    global strength_label
+    global strength_label, strength_bar
+
     strength_label = tk.Label(window, text="Styrka: -", font=("Arial", 12))
     strength_label.pack(pady=5)
+
+    strength_bar = ttk.Progressbar(window, length=250, mode="determinate")
+    strength_bar.pack(pady=5)
 
     copy_icon = tk.PhotoImage(file="copy.png")
 
