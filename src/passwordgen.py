@@ -4,6 +4,20 @@ import tkinter as tk # Bibliotek för att skapa grafiska användargränssnitt
 import secrets # Bibliotek för att generera säkra slumpmässiga tal, används här för att skapa lösenord
 import string # Bibliotek som innehåller olika strängkonstanter, används här för att få tillgång till bokstäver och siffror
 
+
+import sys # Bibliotek för att hantera systemrelaterade funktioner, används här för att hantera resursvägar när programmet körs som en fristående .exe-fil skapad med PyInstaller
+import os # Bibliotek för att hantera operativsystemets funktioner, används här för att hantera resursvägar när programmet körs som en fristående .exe-fil skapad med PyInstaller
+
+# Funktion för att hantera resursvägar, särskilt när programmet körs som en fristående .exe-fil skapad med PyInstaller
+def resource_path(relative_path):
+    
+    try:
+        base_path = sys._MEIPASS  # Carpeta temporal donde PyInstaller extrae los archivos
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 from tkinter import ttk # Importerar ttk-modulen från tkinter för att använda mer avancerade widgets, även om den inte används i det här skriptet
 
 # Funktion för att generera ett enkelt lösenord baserat på den valda längden från skalan
@@ -42,14 +56,14 @@ def generate_and_display():
 
     strength, color, score = evaluate_strength(password)
 
-    # Actualizar texto
+    # Update text
     strength_label.config(text=f"Styrka: {strength}", fg=color)
 
-    # Actualizar barra (máximo 40)
+    # Update bar (maximum 40)
     strength_bar["value"] = score
     strength_bar["maximum"] = 40
 
-    # Cambiar color de la barra
+    # Change bar color based on strength
     style = ttk.Style()
     style.theme_use("default")
 
@@ -110,10 +124,10 @@ class Tooltip:
 def evaluate_strength(password):
     score = 0
 
-    # Longitud
+    # size
     score += min(len(password), 20)
 
-    # Variedad de caracteres
+    # Character types
     if any(c.islower() for c in password):
         score += 5
     if any(c.isupper() for c in password):
@@ -123,7 +137,7 @@ def evaluate_strength(password):
     if any(c in string.punctuation for c in password):
         score += 5
 
-    # Determinar nivel
+    # Determinate level
     if score < 15:
         return "Svagt", "red", score
     elif score < 30:
@@ -143,11 +157,13 @@ def main():
     window.title("Lösenord Generator")
     window.geometry("400x500")
     window.resizable(False, False)
-    window.attributes("-toolwindow", True)
     window.configure(highlightthickness=2, highlightbackground="#555")
-
-    title = tk.Label(window, text="Lösenord Generator", font=("Arial", 16))
-    title.pack(pady=10)
+    try:
+        window.iconbitmap(resource_path("icon.ico"))  # Windows
+    except:
+        window.iconphoto(True, tk.PhotoImage(file=resource_path("copy.png")))  # Linux fallback
+        title = tk.Label(window, text="Lösenord Generator", font=("Arial", 16))
+        title.pack(pady=10)
 
     checkbutton_var = tk.IntVar() 
     chk1 = tk.Checkbutton(window, text="Inkludera Konsonanter", variable=checkbutton_var)
@@ -182,7 +198,7 @@ def main():
     btn_generate = tk.Button(window, text="Generera Lösenord", command=generate_and_display)
     btn_generate.pack(pady=5)
 
-    # Frame para colocar entry + botón en la misma fila
+    # Skapar en ram för att hålla output-boxen och kopieringsknappen, samt etiketten och progressbaren för att visa lösenordets styrka
     output_frame = tk.Frame(window)
     output_frame.pack(pady=10, padx=20, fill="x")   
 
@@ -194,13 +210,13 @@ def main():
     strength_bar = ttk.Progressbar(window, length=250, mode="determinate")
     strength_bar.pack(pady=5)
 
-    copy_icon = tk.PhotoImage(file="copy.png")
-
+    copy_icon = tk.PhotoImage(file=resource_path("copy.png"))
+    
     output_box = tk.Entry(output_frame, font=("Arial", 14), justify="center")
     output_box.pack(side="left", fill="x", expand=True)
 
     btn_copy = tk.Button(output_frame, image=copy_icon, command=copy_to_clipboard)
-    btn_copy.image = copy_icon  # evita que Tkinter la borre
+    btn_copy.image = copy_icon  # Behövs för att förhindra att bilden tas bort av garbage collection
     btn_copy.pack(side="left", padx=5)
 
     btn_exit = tk.Button(window, text="Avsluta", command=window.destroy)
